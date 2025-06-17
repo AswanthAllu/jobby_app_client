@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import {Route, Routes, Navigate} from 'react-router-dom' // UPDATED IMPORTS
+import LoginForm from './components/LoginForm'
+import SignupForm from './components/SignupForm'
+import Home from './components/Home'
+import NotFound from './components/NotFound'
+import ProtectedRoute from './components/ProtectedRoute'
+import JobItemDetails from './components/JobItemDetails'
+import Jobs from './components/Jobs'
+import './App.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => (
+  // UPDATED to use <Routes> instead of <Switch>
+  <Routes> 
+    <Route path="/login" element={<LoginForm />} />
+    <Route path="/signup" element={<SignupForm />} />
 
-export default App;
+    {/* Protected Routes are now wrapped this way */}
+    <Route
+      path="/"
+      element={
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/jobs"
+      element={
+        <ProtectedRoute>
+          <Jobs />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/jobs/:id"
+      element={
+        <ProtectedRoute>
+          <JobItemDetails />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route path="/not-found" element={<NotFound />} />
+    {/* UPDATED to use <Navigate> for redirection */}
+    <Route path="*" element={<Navigate to="/not-found" />} /> 
+  </Routes>
+)
+
+export default App

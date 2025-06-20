@@ -1,41 +1,68 @@
-.navbar-container {
-  background-color: #202020;
+/* src/components/Header/index.css */
+.header-nav-bar {
+  background-color: #272727;
+  padding: 12px 20px;
+}
+
+.header-content {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.website-logo {
-  width: 150px;
-  height: 40px;
-  margin-top: 10px;
-  margin-left: 100px;
+
+.header-website-logo {
+  width: 90px;
 }
-.header-list-items {
-  list-style-type: none;
-  display: flex;
-  justify-content: center;
-  margin-right: 125px;
+
+.header-logo-link {
+  line-height: 0;
 }
-.home {
-  color: #fff;
-  font-size: 18px;
-  font-family: 'Roboto';
-  font-weight: 500;
+
+/* Hide desktop links on mobile */
+.header-desktop-links {
+  display: none;
 }
-.logout-button {
-  background-color: #4f46e5;
-  padding: 10px;
-  border-radius: 6px;
-  color: #fff;
-  font-family: 'Roboto';
-  font-weight: 500;
+
+.header-profile-section {
+  position: relative;
+}
+
+.header-profile-button {
+  background: none;
   border: none;
-  margin-right: 55px;
-  width: 110px;
+  cursor: pointer;
+  padding: 0;
 }
-.jon-heading {
-  margin-left: 40px;
+
+.header-profile-icon {
+  color: #ffffff;
+  font-size: 28px;
 }
-.link-item {
-  text-decoration: none;
+
+/* Desktop Styles */
+@media screen and (min-width: 768px) {
+  .header-desktop-links {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    gap: 24px;
+  }
+  .header-nav-link {
+    text-decoration: none;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  .header-content {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+  }
+  .header-desktop-links {
+    justify-self: center;
+  }
 }

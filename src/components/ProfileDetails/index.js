@@ -1,101 +1,84 @@
-import {Component} from 'react'
-import {ThreeDots} from 'react-loader-spinner' // UPDATED IMPORT
-import Cookies from 'js-cookie'
-import './index.css'
+// src/components/ProfileDetails/index.js
+import {Component} from 'react';
+import {ThreeDots} from 'react-loader-spinner';
+import Cookies from 'js-cookie';
+import './index.css'; // We will update this CSS file
 
 const apiStatusConstants = {
   initial: 'INITIAL',
   inProgress: 'INPROGRESS',
   success: 'SUCCESS',
   failure: 'FAILURE',
-}
+};
 
+// This component now fetches and displays profile details in a card format
 class ProfileDetails extends Component {
   state = {
-    profileList: [],
+    profileData: {},
     apiStatus: apiStatusConstants.initial,
-  }
+  };
 
   componentDidMount() {
-    this.getProfileDetails()
+    this.getProfileDetails();
   }
 
   getProfileDetails = async () => {
-    this.setState({
-      apiStatus: apiStatusConstants.inProgress,
-    })
-
-    const jwtToken = Cookies.get('jwt_token')
-    const url = 'http://localhost:5001/api/profile'
+    this.setState({apiStatus: 'IN_PROGRESS'});
+    const jwtToken = Cookies.get('jwt_token');
+    const url = `http://localhost:5001/api/profile`;
     const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
-    const response = await fetch(url, options)
-    if (response.ok === true) {
-      const data = await response.json()
-      const profileData = {
-        name: data.profile_details.name,
-        profileImageUrl: data.profile_details.profile_image_url,
-        shortBio: data.profile_details.short_bio,
-      }
+      headers: {Authorization: `Bearer ${jwtToken}`},
+    };
+
+    const response = await fetch(url, options);
+    if (response.ok) {
+      const data = await response.json();
       this.setState({
-        profileList: profileData,
+        profileData: data.profile_details,
         apiStatus: apiStatusConstants.success,
-      })
+      });
     } else {
-      this.setState({apiStatus: apiStatusConstants.failure})
+      this.setState({apiStatus: 'FAILURE'});
     }
-  }
-
-  renderProfileDetails = () => {
-    const {profileList} = this.state
-    const {name, profileImageUrl, shortBio} = profileList
-
-    return (
-      <div className="profile-container">
-        <img src={profileImageUrl} alt="profile" className="profile-logo" />
-        <h1 className="name-heading">{name}</h1>
-        <p className="bio">{shortBio}</p>
-      </div>
-    )
-  }
+  };
 
   renderLoadingView = () => (
-    <div className="profile-loader-container" data-testid="loader">
-      {/* UPDATED COMPONENT USAGE */}
-      <ThreeDots color="#ffffff" height={50} width={50} />
+    <div className="profile-loader">
+      <ThreeDots color="#4f46e5" height={40} width={40} />
     </div>
-  )
+  );
 
   renderFailureView = () => (
-    <div className="failure-view-container">
-      <button
-        type="button"
-        className="job-item-failure-button"
-        onClick={this.getProfileDetails}
-      >
-        Retry
-      </button>
+    <div className="profile-failure">
+      <p>Failed to load profile.</p>
+      <button type="button" onClick={this.getProfileDetails}>Retry</button>
     </div>
-  )
+  );
+
+  renderSuccessView = () => {
+    const {profileData} = this.state;
+    const {name, short_bio, profile_image_url} = profileData;
+    return (
+      <>
+        <img src={profile_image_url} alt="profile" className="profile-avatar" />
+        <h1 className="profile-name">{name}</h1>
+        <p className="profile-bio">{short_bio}</p>
+      </>
+    );
+  };
 
   render() {
-    const {apiStatus} = this.state
-
-    switch (apiStatus) {
-      case apiStatusConstants.success:
-        return this.renderProfileDetails()
-      case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
-      case apiStatusConstants.failure:
-        return this.renderFailureView()
-      default:
-        return null
-    }
+    const {apiStatus} = this.state;
+    
+    // The main container now has a class for dropdown styling
+    return (
+      <div className="profile-details-container">
+        {apiStatus === 'IN_PROGRESS' && this.renderLoadingView()}
+        {apiStatus === 'FAILURE' && this.renderFailureView()}
+        {apiStatus === 'SUCCESS' && this.renderSuccessView()}
+      </div>
+    );
   }
 }
 
-export default ProfileDetails
+export default ProfileDetails;

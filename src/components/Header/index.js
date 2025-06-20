@@ -1,46 +1,51 @@
 // src/components/Header/index.js
-import Cookies from 'js-cookie'
-// UPDATED: Import useNavigate hook instead of withRouter
-import {useNavigate, Link} from 'react-router-dom' 
-import './index.css'
+import {useState} from 'react';
+import {Link} from 'react-router-dom';
+import {FaUserCircle} from 'react-icons/fa';
+import Sidebar from '../Sidebar'; // <-- IMPORT THE NEW SIDEBAR
+import './index.css';
 
 const Header = () => {
-  // Get the navigate function from the hook
-  const navigate = useNavigate() 
-
-  const onClickLogout = () => {
-    Cookies.remove('jwt_token')
-    // Use the navigate function to redirect
-    navigate('/login') 
-  }
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <nav className="navbar-container">
-      <div>
-        <Link to="/" className="link-item">
-          <img
-            src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
-            alt="website logo"
-            className="website-logo"
-          />
-        </Link>
-      </div>
-      <ul className="header-list-items">
-        <Link to="/" className="link-item">
-          <li className="home-heading home">Home</li>
-        </Link>
-        <Link to="/jobs" className="link-item">
-          <li className="jon-heading home">Jobs</li>
-        </Link>
-      </ul>
-      <div>
-        <button type="button" className="logout-button" onClick={onClickLogout}>
-          Logout
-        </button>
-      </div>
-    </nav>
-  )
-}
+    <>
+      <nav className="header-nav-bar">
+        <div className="header-content">
+          <Link to="/" className="header-logo-link">
+            <img
+              src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
+              alt="website logo"
+              className="header-website-logo"
+            />
+          </Link>
 
-// REMOVED: withRouter is no longer needed
-export default Header
+          {/* Desktop links remain the same */}
+          <ul className="header-desktop-links">
+            <li className="header-nav-item">
+              <Link to="/" className="header-nav-link">Home</Link>
+            </li>
+            <li className="header-nav-item">
+              <Link to="/jobs" className="header-nav-link">Jobs</Link>
+            </li>
+          </ul>
+
+          <div className="header-profile-section">
+            <button
+              type="button"
+              className="header-profile-button"
+              onClick={() => setSidebarOpen(true)} // This now opens the sidebar
+            >
+              <FaUserCircle className="header-profile-icon" />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* The Sidebar is rendered here and controlled by state */}
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+    </>
+  );
+};
+
+export default Header;

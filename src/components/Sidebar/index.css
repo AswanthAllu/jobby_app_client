@@ -1,0 +1,81 @@
+/* src/components/Sidebar/index.css */
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-container.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 90%;
+  max-width: 320px;
+  height: 100%;
+  background-color: #202020;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  padding: 25px;
+  display: flex;
+  flex-direction: column; /* The main sidebar content stacks vertically */
+}
+
+.sidebar-container.open .sidebar-content {
+  transform: translateX(0);
+}
+
+.sidebar-close-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 28px;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-bottom: 40px;
+}
+
+/* --- THIS IS THE CORRECTED PART --- */
+.sidebar-nav-items {
+  display: flex;
+  flex-direction: column; /* Arrange items in a row */
+  justify-content: space-between; /* Push them to opposite ends */
+  align-items: start; /* Vertically align them */
+  width: 100%;
+}
+
+.sidebar-link {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.sidebar-logout-button {
+  background-color: #ea0e0e;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top:10px;
+}
+
+.sidebar-logout-button:hover {
+  background-color: #4338ca;
+}

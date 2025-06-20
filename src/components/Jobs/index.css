@@ -1,6 +1,35 @@
-.job-profile-container {
+/* src/components/Jobs/index.css */
+.jobs-page-container {
   background-color: #000000;
+  min-height: 90vh;
+  padding: 10px;
+}
+
+.mobile-filter-button-container {
   display: flex;
-  justify-content: space-around;
-  padding: 25px;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.mobile-filter-button {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hide the mobile filter button on desktop */
+@media screen and (min-width: 768px) {
+  .mobile-filter-button-container {
+    display: none;
+  }
+  .jobs-page-container {
+    padding: 20px;
+  }
 }

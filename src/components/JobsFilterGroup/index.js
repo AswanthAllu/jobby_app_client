@@ -1,15 +1,15 @@
-import ProfileDetails from '../ProfileDetails'
-import './index.css'
+// src/components/JobsFilterGroup/index.js
+// import ProfileDetails from '../ProfileDetails' // <-- DELETE THIS LINE
+import './index.css';
 
 const JobsFilterGroup = props => {
+  // ... (getEmploymentTypeList and renderEmploymentType functions remain the same) ...
   const getEmploymentTypeList = () => {
-    const {employmentTypesList} = props
-
+    const {employmentTypesList} = props;
     return employmentTypesList.map(employ => {
-      const {changeEmploymentType} = props
+      const {changeEmploymentType} = props;
       const onChangeEmployType = event =>
-        changeEmploymentType(event.target.value)
-
+        changeEmploymentType(event.target.value);
       return (
         <li
           className="checkbox-list-items"
@@ -26,24 +26,23 @@ const JobsFilterGroup = props => {
             {employ.label}
           </label>
         </li>
-      )
-    })
-  }
+      );
+    });
+  };
 
   const renderEmploymentType = () => (
     <div className="salary-container">
       <h1 className="salary-heading">Type of Employment</h1>
       <ul className="salary-range-container">{getEmploymentTypeList()}</ul>
     </div>
-  )
+  );
 
+  // ... (getSalaryRangeList and renderSalaryRange functions remain the same) ...
   const getSalaryRangeList = () => {
-    const {salaryRangesList} = props
-
+    const {salaryRangesList} = props;
     return salaryRangesList.map(salary => {
-      const {changeSalaryRange} = props
-      const onChangeSalary = () => changeSalaryRange(salary.salaryRangeId)
-
+      const {changeSalaryRange} = props;
+      const onChangeSalary = () => changeSalaryRange(salary.salaryRangeId);
       return (
         <li
           className="checkbox-list-items"
@@ -60,26 +59,28 @@ const JobsFilterGroup = props => {
             {salary.label}
           </label>
         </li>
-      )
-    })
-  }
+      );
+    });
+  };
 
   const renderSalaryRange = () => (
     <div className="salary-container">
       <h1 className="salary-heading">Salary Range</h1>
       <ul className="salary-range-container">{getSalaryRangeList()}</ul>
     </div>
-  )
+  );
+
 
   return (
     <div className="job-filter-group">
-      <ProfileDetails />
-      <hr className="horizontal-line" />
+      {/* --- THE PROFILE SECTION IS NOW REMOVED FROM HERE --- */}
+      {/* <ProfileDetails /> */}
+      {/* <hr className="horizontal-line" /> */}
       {renderEmploymentType()}
       <hr className="horizontal-line" />
       {renderSalaryRange()}
     </div>
-  )
-}
+  );
+};
 
-export default JobsFilterGroup
+export default JobsFilterGroup;

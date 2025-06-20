@@ -1,9 +1,8 @@
 // src/components/LoginForm/index.js
-import {Component} from 'react'
-import Cookies from 'js-cookie'
-import {Navigate, Link} from 'react-router-dom' // UPDATED
-
-import './index.css'
+import {Component} from 'react';
+import Cookies from 'js-cookie';
+import {Navigate, Link} from 'react-router-dom';
+import './index.css';
 
 class LoginForm extends Component {
   state = {
@@ -11,29 +10,37 @@ class LoginForm extends Component {
     password: '',
     showSubmitError: false,
     errorMsg: '',
-  }
+  };
 
-  // In v6, we can't access history.replace from props directly in class components.
-  // A better way is to handle navigation in the App component, but for a quick fix,
-  // we can use window.location which causes a full page reload.
-  onSubmitSuccess = jwtToken => {
-    Cookies.set('jwt_token', jwtToken, {
+  onSubmitSuccess = data => {
+    Cookies.set('jwt_token', data.jwt_token, {
       expires: 30,
       path: '/',
-    })
-    // This forces a reload and the ProtectedRoute will handle the rest.
-    window.location.href = "/" 
-  }
+    });
+    localStorage.setItem('user_info', JSON.stringify(data.user));
+
+    const {user} = data;
+    if (user && user.role === 'admin') {
+      window.location.href = '/admin';
+    } else {
+      window.location.href = '/';
+    }
+  };
 
   onSubmitFailure = errorMsg => {
-    this.setState({showSubmitError: true, errorMsg})
-  }
+    // Let's provide a more generic error message for 404s
+    const displayMsg = errorMsg || 'Network error. Please try again.';
+    this.setState({showSubmitError: true, errorMsg: displayMsg});
+  };
 
   onSubmitForm = async event => {
-    event.preventDefault()
-    const {username, password} = this.state
-    const userDetails = {username, password}
-    const url = 'http://localhost:5001/api/auth/login'
+    event.preventDefault();
+    const {username, password} = this.state;
+    const userDetails = {username, password};
+    
+    // --- THIS IS THE LINE TO FIX ---
+    // Ensure the URL is correct and uses the environment variable.
+    const url = 'http://localhost:5001/api/auth/login';
 
     const options = {
       method: 'POST',
@@ -41,27 +48,34 @@ class LoginForm extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(userDetails),
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const data = await response.json();
+      if (response.ok) {
+        this.onSubmitSuccess(data);
+      } else {
+        // Use the error message from the backend if available
+        this.onSubmitFailure(data.error_msg);
+      }
+    } catch (error) {
+      // This catch block handles network errors like "Failed to fetch"
+      console.error('Login fetch error:', error);
+      this.onSubmitFailure('Network error. Please try again.');
     }
-    const response = await fetch(url, options)
-    const data = await response.json()
-    if (response.ok === true) {
-      this.onSubmitSuccess(data.jwt_token)
-    } else {
-      this.onSubmitFailure(data.error_msg)
-    }
-  }
+  };
 
   onEnterUsername = event => {
-    this.setState({username: event.target.value})
-  }
+    this.setState({username: event.target.value});
+  };
 
   onChangePassword = event => {
-    this.setState({password: event.target.value})
-  }
+    this.setState({password: event.target.value});
+  };
 
   renderUsername = () => {
-    const {username} = this.state
-
+    const {username} = this.state;
     return (
       <>
         <label className="label" htmlFor="userName">
@@ -76,12 +90,11 @@ class LoginForm extends Component {
           onChange={this.onEnterUsername}
         />
       </>
-    )
-  }
+    );
+  };
 
   renderPassword = () => {
-    const {password} = this.state
-
+    const {password} = this.state;
     return (
       <>
         <label className="label" htmlFor="password">
@@ -96,14 +109,20 @@ class LoginForm extends Component {
           onChange={this.onChangePassword}
         />
       </>
-    )
-  }
+    );
+  };
 
   render() {
-    const {showSubmitError, errorMsg} = this.state
-    const jwtToken = Cookies.get('jwt_token')
+    const {showSubmitError, errorMsg} = this.state;
+    const jwtToken = Cookies.get('jwt_token');
     if (jwtToken !== undefined) {
-      return <Navigate to="/" /> // UPDATED
+      // Check user role for redirection if already logged in
+      const userInfoString = localStorage.getItem('user_info');
+      const userInfo = userInfoString ? JSON.parse(userInfoString) : null;
+      if (userInfo && userInfo.role === 'admin') {
+        return <Navigate to="/admin" />;
+      }
+      return <Navigate to="/" />;
     }
 
     return (
@@ -127,8 +146,8 @@ class LoginForm extends Component {
           </form>
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default LoginForm
+export default LoginForm;

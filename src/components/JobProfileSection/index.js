@@ -46,7 +46,7 @@ class JobProfileSection extends Component {
     this.setState({apiStatus: 'IN_PROGRESS'});
     const jwtToken = Cookies.get('jwt_token');
     const {salaryRange, employmentType, searchInput} = this.state;
-    const url = `http://localhost:5001/api/jobs?employment_type=${employmentType.join()}&minimum_package=${salaryRange}&search=${searchInput}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/jobs?employment_type=${employmentType.join()}&minimum_package=${salaryRange}&search=${searchInput}`;
     const options = {
       headers: {Authorization: `Bearer ${jwtToken}`},
       method: 'GET',

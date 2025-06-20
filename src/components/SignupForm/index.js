@@ -29,7 +29,7 @@ class SignupForm extends Component {
     event.preventDefault()
     const {name, username, password} = this.state
     const userDetails = {name, email: username, password}
-    const url = 'http://localhost:5001/api/auth/register'
+    const url = `${process.env.REACT_APP_API_URL}/api/auth/register`
 
     const options = {
       method: 'POST',

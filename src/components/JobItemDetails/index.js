@@ -40,7 +40,7 @@ class JobItemDetails extends Component {
     const id = urlPath.substring(urlPath.lastIndexOf('/') + 1)
 
     const jwtToken = Cookies.get('jwt_token')
-    const url = `http://localhost:5001/api/jobs/${id}`
+    const url = `${process.env.REACT_APP_API_URL}/api/jobs/${id}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,

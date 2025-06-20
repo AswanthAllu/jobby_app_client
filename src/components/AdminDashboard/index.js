@@ -30,7 +30,7 @@ class AdminDashboard extends Component {
   fetchJobs = async () => {
     this.setState({apiStatus: 'IN_PROGRESS'});
     const token = Cookies.get('jwt_token');
-    const url = `http://localhost:5001/api/jobs`;
+    const url = `${process.env.REACT_APP_API_URL}/api/jobs`;
     const options = {
       headers: {Authorization: `Bearer ${token}`},
       method: 'GET',

@@ -1,7 +1,5 @@
-/* src/components/LoginForm/index.css */
-
-.jobby-app-container {
-  background-color: #121212; /* A slightly softer black */
+.login-page-container {
+  background-color: #000000;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -9,116 +7,108 @@
   padding: 20px;
 }
 
-.card-container {
+.login-form-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #2c364c; /* Using the darker shade from your design */
-  padding: 40px 25px; /* Reduced padding for a tighter look */
-  border-radius: 12px; /* A slightly softer border radius */
+  background-color: #2c364c;
+  padding: 48px 32px;
+  border-radius: 16px;
   width: 100%;
-  max-width: 400px; /* Reduced max-width for a more compact form */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 420px;
 }
 
-.website-logo {
-  width: 100px; /* Smaller logo */
-  margin-bottom: 30px; /* Adjusted margin */
+.login-website-logo {
+  width: 130px;
+  margin-bottom: 35px;
 }
 
-.form-container {
+.login-form {
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 0; /* Removed top margin to tighten layout */
 }
 
-.input-container {
+.login-input-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px; /* Reduced margin */
+  margin-bottom: 24px;
   width: 100%;
 }
 
-.label {
-  color: #cbd5e1; /* Lighter grey for better contrast */
+.login-label {
+  color: #f8fafc;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 8px;
-  text-transform: uppercase; /* Adds a professional touch */
   letter-spacing: 0.5px;
 }
 
-.user-input {
-  background-color: #1e293b; /* A subtle background for the input */
-  border: 1px solid #475569; /* A matching border */
+.login-user-input {
+  background-color: transparent;
+  border: 1px solid #7e858e;
   width: 100%;
   border-radius: 6px;
-  padding: 12px 14px; /* Adjusted padding */
+  padding: 12px 16px;
   outline: none;
   font-size: 16px;
   color: #ffffff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s;
 }
 
-.user-input::placeholder {
+.login-user-input::placeholder {
   color: #94a3b8;
 }
 
-.user-input:focus {
+.login-user-input:focus {
   border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); /* Focus ring for accessibility */
 }
 
-.login-button {
+.login-form-button {
   background-color: #4f46e5;
-  padding: 14px; /* Slightly taller button */
+  padding: 12px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   border: none;
   color: #ffffff;
-  margin-top: 15px; /* Reduced margin */
+  margin-top: 10px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.login-button:hover {
+.login-form-button:hover {
   background-color: #4338ca;
 }
 
-.error-msg {
+.login-error-msg {
   align-self: start;
   font-size: 14px;
   margin-top: 8px;
   margin-bottom: 0px;
-  color: #f87171; /* A slightly softer red */
+  color: #ff0b37;
 }
 
-.signup-link {
-  color: #94a3b8;
+.signup-prompt {
+  color: #cbd5e1;
   text-align: center;
-  margin-top: 25px;
+  margin-top: 24px;
   font-size: 14px;
 }
 
-.signup-link a {
-  color: #818cf8; /* A lighter purple for the link */
+.signup-link {
+  color: #818cf8;
   text-decoration: none;
   font-weight: 600;
 }
 
-.signup-link a:hover {
+.signup-link:hover {
   text-decoration: underline;
 }
 
-/* --- DESKTOP AND LARGER SCREENS --- */
+/* Media query for slightly larger screens if needed */
 @media screen and (min-width: 768px) {
-  .card-container {
-    padding: 50px 40px; /* Slightly more padding on desktop */
-  }
-
-  .website-logo {
-    width: 120px;
+  .login-form-card {
+    padding: 60px 50px;
   }
 }

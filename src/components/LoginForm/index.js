@@ -1,4 +1,3 @@
-// src/components/LoginForm/index.js
 import {Component} from 'react';
 import Cookies from 'js-cookie';
 import {Navigate, Link} from 'react-router-dom';
@@ -28,7 +27,6 @@ class LoginForm extends Component {
   };
 
   onSubmitFailure = errorMsg => {
-    // Let's provide a more generic error message for 404s
     const displayMsg = errorMsg || 'Network error. Please try again.';
     this.setState({showSubmitError: true, errorMsg: displayMsg});
   };
@@ -37,11 +35,8 @@ class LoginForm extends Component {
     event.preventDefault();
     const {username, password} = this.state;
     const userDetails = {username, password};
-    
-    // --- THIS IS THE LINE TO FIX ---
-    // Ensure the URL is correct and uses the environment variable.
     const url = `${process.env.REACT_APP_API_URL}/api/auth/login`;
-     console.log(url);
+
     const options = {
       method: 'POST',
       headers: {
@@ -56,11 +51,9 @@ class LoginForm extends Component {
       if (response.ok) {
         this.onSubmitSuccess(data);
       } else {
-        // Use the error message from the backend if available
         this.onSubmitFailure(data.error_msg);
       }
     } catch (error) {
-      // This catch block handles network errors like "Failed to fetch"
       console.error('Login fetch error:', error);
       this.onSubmitFailure('Network error. Please try again.');
     }
@@ -74,49 +67,10 @@ class LoginForm extends Component {
     this.setState({password: event.target.value});
   };
 
-  renderUsername = () => {
-    const {username} = this.state;
-    return (
-      <>
-        <label className="label" htmlFor="userName">
-          USERNAME (EMAIL)
-        </label>
-        <input
-          type="text"
-          id="userName"
-          placeholder="Email"
-          className="user-input"
-          value={username}
-          onChange={this.onEnterUsername}
-        />
-      </>
-    );
-  };
-
-  renderPassword = () => {
-    const {password} = this.state;
-    return (
-      <>
-        <label className="label" htmlFor="password">
-          PASSWORD
-        </label>
-        <input
-          className="user-input"
-          id="password"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={this.onChangePassword}
-        />
-      </>
-    );
-  };
-
   render() {
-    const {showSubmitError, errorMsg} = this.state;
+    const {username, password, showSubmitError, errorMsg} = this.state;
     const jwtToken = Cookies.get('jwt_token');
     if (jwtToken !== undefined) {
-      // Check user role for redirection if already logged in
       const userInfoString = localStorage.getItem('user_info');
       const userInfo = userInfoString ? JSON.parse(userInfoString) : null;
       if (userInfo && userInfo.role === 'admin') {
@@ -126,22 +80,49 @@ class LoginForm extends Component {
     }
 
     return (
-      <div className="jobby-app-container">
-        <div className="card-container">
+      <div className="login-page-container">
+        <div className="login-form-card">
           <img
             src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
             alt="website logo"
-            className="website-logo"
+            className="login-website-logo"
           />
-          <form className="form-container" onSubmit={this.onSubmitForm}>
-            <div className="input-container">{this.renderUsername()}</div>
-            <div className="input-container">{this.renderPassword()}</div>
-            <button className="login-button" type="submit">
+          <form className="login-form" onSubmit={this.onSubmitForm}>
+            <div className="login-input-container">
+              <label className="login-label" htmlFor="username">
+                USERNAME (EMAIL)
+              </label>
+              <input
+                type="text"
+                id="username"
+                className="login-user-input"
+                placeholder="Email"
+                value={username}
+                onChange={this.onEnterUsername}
+              />
+            </div>
+            <div className="login-input-container">
+              <label className="login-label" htmlFor="password">
+                PASSWORD
+              </label>
+              <input
+                type="password"
+                id="password"
+                className="login-user-input"
+                placeholder="Password"
+                value={password}
+                onChange={this.onChangePassword}
+              />
+            </div>
+            <button type="submit" className="login-form-button">
               Login
             </button>
-            {showSubmitError && <p className="error-msg">*{errorMsg}</p>}
-            <p className="signup-link">
-              Don't have an account? <Link to="/signup">Sign Up</Link>
+            {showSubmitError && <p className="login-error-msg">*{errorMsg}</p>}
+            <p className="signup-prompt">
+              Don't have an account?{' '}
+              <Link to="/signup" className="signup-link">
+                Sign Up
+              </Link>
             </p>
           </form>
         </div>

@@ -41,7 +41,7 @@ class LoginForm extends Component {
     // --- THIS IS THE LINE TO FIX ---
     // Ensure the URL is correct and uses the environment variable.
     const url = `${process.env.REACT_APP_API_URL}/api/auth/login`;
-
+     console.log(url);
     const options = {
       method: 'POST',
       headers: {

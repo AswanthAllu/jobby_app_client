@@ -1,24 +1,24 @@
-/* src/components/JobProfileSection/index.css */
-
-/* Main container for the two-column layout */
 .jobs-section-container {
   display: flex;
-  flex-direction: column; /* Mobile-first: stacked layout */
+  flex-direction: row;
+  align-items: flex-start;
   gap: 20px;
 }
 
-/* --- LEFT COLUMN (Filters) --- */
 .filters-group-container {
-  width: 100%;
+  width: 300px;
+  flex-shrink: 0;
 }
 
-/* --- RIGHT COLUMN (Jobs List) --- */
+.sidebar-close-button {
+  display: none;
+}
+
 .jobs-list-section {
-  width: 100%;
-  min-width: 0; /* Prevents overflow */
+  flex-grow: 1;
+  min-width: 0;
 }
 
-/* ... (All other styles for search, no-jobs, failure, etc., remain the same) ... */
 .search-input-container {
   display: flex;
   border: 1px solid #7e858e;
@@ -87,28 +87,6 @@
   font-weight: 500;
 }
 
-
-/* --- DESKTOP AND LARGER SCREENS --- */
-@media screen and (min-width: 768px) {
-  .jobs-section-container {
-    flex-direction: row; /* Side-by-side on desktop */
-    align-items: flex-start; /* Align columns to the top */
-  }
-
-  .filters-group-container {
-    /* --- THIS IS THE "STICKY" PART --- */
-    width: 300px; /* Give it a fixed width */
-    flex-shrink: 0; /* Prevent it from shrinking */
-    position: sticky; /* The magic property */
-    top: 20px; /* The distance from the top it will stick to */
-  }
-
-  .jobs-list-section {
-    flex-grow: 1; /* Allow the jobs list to take the remaining space */
-  }
-}
-
-/* --- MOBILE SIDEBAR STYLES (from previous step) --- */
 @media screen and (max-width: 767px) {
   .jobs-section-container {
     position: relative;
@@ -143,5 +121,9 @@
     top: 10px;
     right: 10px;
     cursor: pointer;
+  }
+
+  .jobs-list-section {
+    width: 100%;
   }
 }

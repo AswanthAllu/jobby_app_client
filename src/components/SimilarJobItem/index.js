@@ -16,8 +16,9 @@ const SimilarJobItem = props => {
     rating,
   } = jobDetails;
 
-  // --- THIS IS THE LINKING FIX ---
-  // The entire card is wrapped in a Link component
+  // --- THIS IS THE FIX ---
+  // The entire card is wrapped in a Link component.
+  // When clicked, it will navigate to the new job's details page.
   return (
     <Link to={`/jobs/${id}`} className="similar-job-link">
       <li className="similar-job-card">

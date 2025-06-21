@@ -1,6 +1,5 @@
-// src/components/JobItemDetails/index.js
 import {Component} from 'react';
-import {useParams} from 'react-router-dom'; // <-- Import the useParams hook
+import {useParams} from 'react-router-dom';
 import Cookies from 'js-cookie';
 import {AiFillStar} from 'react-icons/ai';
 import {GoLocation} from 'react-icons/go';
@@ -25,9 +24,7 @@ class JobItemDetails extends Component {
     apiStatus: apiStatusConstants.initial,
   };
 
-  // --- UPDATED: componentDidUpdate now compares the ID from props ---
   componentDidUpdate(prevProps) {
-    // Check if the router's id prop has changed
     if (this.props.router.params.id !== prevProps.router.params.id) {
       this.getJobItem();
     }
@@ -39,10 +36,7 @@ class JobItemDetails extends Component {
 
   getJobItem = async () => {
     this.setState({apiStatus: 'IN_PROGRESS'});
-    
-    // --- UPDATED: Get the ID directly from props ---
     const {id} = this.props.router.params;
-
     const jwtToken = Cookies.get('jwt_token');
     const url = `${process.env.REACT_APP_API_URL}/api/jobs/${id}`;
     const options = {
@@ -50,7 +44,6 @@ class JobItemDetails extends Component {
       method: 'GET',
     };
 
-    // ... (rest of the getJobItem function remains the same)
     try {
       const response = await fetch(url, options);
       if (response.ok) {
@@ -74,7 +67,7 @@ class JobItemDetails extends Component {
           companyLogoUrl: eachSimilarJob.company_logo_url,
           employmentType: eachSimilarJob.employment_type,
           jobDescription: eachSimilarJob.job_description,
-          id: eachSimilarJob.id,
+          id: eachSimilarJob._id,
           rating: eachSimilarJob.rating,
           location: eachSimilarJob.location,
           title: eachSimilarJob.title,
@@ -93,7 +86,6 @@ class JobItemDetails extends Component {
     }
   };
 
-  // ... (renderJobItemDetails, renderFailureView, etc. remain the same)
   renderJobItemDetails = () => {
     const {jobItemList, similarJobItemList} = this.state;
     if (Object.keys(jobItemList).length === 0) {
@@ -113,8 +105,8 @@ class JobItemDetails extends Component {
       skills,
     } = jobItemList;
 
-    const description = lifeAtCompany ? lifeAtCompany.description : '';
-    const imageUrl = lifeAtCompany ? lifeAtCompany.imageUrl : '';
+    // Safely destructure lifeAtCompany properties with a fallback
+    const {description, imageUrl} = lifeAtCompany || {};
 
     return (
       <div className="full-job-item-container">
@@ -149,14 +141,16 @@ class JobItemDetails extends Component {
           <hr className="line" />
           <div className="description-container">
             <h1 className="desc-heading">Description</h1>
-            <a
-              className="visit-link"
-              href={companyWebsiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Visit <BiLinkExternal className="bi-link" />
-            </a>
+            {companyWebsiteUrl && (
+              <a
+                className="visit-link"
+                href={companyWebsiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Visit <BiLinkExternal className="bi-link" />
+              </a>
+            )}
           </div>
           <p className="job-story-desc">{jobDescription}</p>
           <h1 className="skill-heading">Skills</h1>
@@ -167,11 +161,14 @@ class JobItemDetails extends Component {
               </li>
             ))}
           </ul>
+
+          {/* --- THIS IS THE FIX: Only render if description exists --- */}
           {description && (
             <>
               <h1 className="life-company-heading">Life at Company</h1>
               <div className="life-at-company-container">
                 <p className="life-company-desc">{description}</p>
+                {/* Only render the image if the imageUrl also exists */}
                 {imageUrl && <img src={imageUrl} alt="life at company" className="company-logo" />}
               </div>
             </>
@@ -245,11 +242,8 @@ class JobItemDetails extends Component {
   }
 }
 
-// --- THIS IS THE NEW WRAPPER COMPONENT ---
 const JobItemDetailsWrapper = () => {
-  // useParams() is a hook that gives us the URL parameters, like ':id'
   const params = useParams();
-  // We pass the params down to our class component in a 'router' prop
   return <JobItemDetails router={{params}} />;
 };
 

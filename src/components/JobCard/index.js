@@ -1,10 +1,10 @@
-import {AiFillStar} from 'react-icons/ai'
-import {Link} from 'react-router-dom'
-import {HiLocationMarker, HiMail} from 'react-icons/hi'
-import './index.css'
+import {AiFillStar} from 'react-icons/ai';
+import {Link} from 'react-router-dom';
+import {HiLocationMarker, HiMail} from 'react-icons/hi';
+import './index.css';
 
 const JobCard = props => {
-  const {jobDetails} = props
+  const {jobDetails} = props;
   const {
     title,
     companyLogoUrl,
@@ -14,7 +14,7 @@ const JobCard = props => {
     id,
     packagePerAnnum,
     jobDescription,
-  } = jobDetails
+  } = jobDetails;
 
   return (
     <Link to={`/jobs/${id}`} className="link-item">
@@ -51,7 +51,7 @@ const JobCard = props => {
         <p className="job-description">{jobDescription}</p>
       </li>
     </Link>
-  )
-}
+  );
+};
 
-export default JobCard
+export default JobCard;

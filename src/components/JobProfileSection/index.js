@@ -1,14 +1,12 @@
-// src/components/JobProfileSection/index.js
 import {Component} from 'react';
 import {ThreeDots} from 'react-loader-spinner';
 import {BsSearch} from 'react-icons/bs';
-import {IoMdClose} from 'react-icons/io'; // Close Icon
+import {IoMdClose} from 'react-icons/io';
 import Cookies from 'js-cookie';
 import JobCard from '../JobCard';
 import JobsFilterGroup from '../JobsFilterGroup';
 import './index.css';
 
-// ... (employmentTypesList, salaryRangesList, apiStatusConstants remain the same) ...
 const employmentTypesList = [
   {label: 'Full Time', employmentTypeId: 'Full Time'},
   {label: 'Part Time', employmentTypeId: 'Part Time'},
@@ -29,7 +27,6 @@ const apiStatusConstants = {
 };
 
 class JobProfileSection extends Component {
-  // ... (state and all logic functions like getJobDetails remain the same) ...
   state = {
     jobsList: [],
     searchInput: '',
@@ -54,6 +51,7 @@ class JobProfileSection extends Component {
     const response = await fetch(url, options);
     if (response.ok) {
       const data = await response.json();
+      // This mapping is crucial. It ensures the correct prop names are used.
       const updatedData = data.jobs.map(eachJob => ({
         companyLogoUrl: eachJob.company_logo_url,
         employmentType: eachJob.employment_type,
@@ -163,16 +161,13 @@ class JobProfileSection extends Component {
     const {searchInput} = this.state;
     const {showFilters, onCloseFilters} = this.props;
 
-    // Add a class to the sidebar container when it should be shown
     const sidebarClassName = `filters-group-container ${
       showFilters ? 'show-sidebar' : ''
     }`;
 
     return (
       <div className="jobs-section-container">
-        {/* --- LEFT COLUMN / SLIDING SIDEBAR --- */}
         <div className={sidebarClassName}>
-          {/* This button is only for the mobile sidebar view */}
           <button
             type="button"
             className="sidebar-close-button"
@@ -188,7 +183,6 @@ class JobProfileSection extends Component {
           />
         </div>
 
-        {/* --- RIGHT COLUMN --- */}
         <div className="jobs-list-section">
           <div className="search-input-container">
             <input

@@ -16,14 +16,13 @@ class AdminDashboard extends Component {
     employmentType: 'Full Time',
     packagePerAnnum: '',
     jobDescription: '',
+    skills: '',
     editingJobId: null,
     successMessage: '',
     errorMessage: '',
-    // --- NEW: State for the search feature ---
     searchQuery: '',
   };
 
-  // --- All existing logic functions (componentDidMount, fetchJobs, etc.) remain the same ---
   componentDidMount() {
     this.fetchJobs();
   }
@@ -50,7 +49,6 @@ class AdminDashboard extends Component {
     this.setState({[event.target.name]: event.target.value});
   };
 
-  // --- NEW: Handler for the search input ---
   handleSearchChange = event => {
     this.setState({searchQuery: event.target.value});
   };
@@ -67,6 +65,7 @@ class AdminDashboard extends Component {
       employmentType,
       packagePerAnnum,
       jobDescription,
+      skills,
     } = this.state;
     const token = Cookies.get('jwt_token');
     const jobData = {
@@ -77,6 +76,7 @@ class AdminDashboard extends Component {
       employmentType,
       packagePerAnnum,
       jobDescription,
+      skills,
     };
     const isUpdating = editingJobId !== null;
     const url = isUpdating
@@ -103,6 +103,7 @@ class AdminDashboard extends Component {
   };
 
   handleEditClick = job => {
+    const skillsString = job.skills ? job.skills.map(s => s.name).join(', ') : '';
     this.setState({
       editingJobId: job.id,
       title: job.title,
@@ -112,6 +113,7 @@ class AdminDashboard extends Component {
       employmentType: job.employment_type,
       packagePerAnnum: job.package_per_annum,
       jobDescription: job.job_description,
+      skills: skillsString,
     });
     window.scrollTo(0, 0);
   };
@@ -144,9 +146,9 @@ class AdminDashboard extends Component {
       employmentType: 'Full Time',
       packagePerAnnum: '',
       jobDescription: '',
+      skills: '',
     });
   };
-
 
   render() {
     const {
@@ -158,15 +160,14 @@ class AdminDashboard extends Component {
       employmentType,
       packagePerAnnum,
       jobDescription,
+      skills,
       successMessage,
       errorMessage,
       apiStatus,
       jobs,
-      // --- NEW: Get search query from state ---
       searchQuery,
     } = this.state;
 
-    // --- NEW: Filter the jobs list based on the search query ---
     const filteredJobs = jobs.filter(job =>
       job.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
@@ -181,6 +182,8 @@ class AdminDashboard extends Component {
             <div className="admin-form-container">
               <form className="admin-form" onSubmit={this.handleFormSubmit}>
                 <h2>{editingJobId ? 'Edit Job' : 'Add New Job'}</h2>
+                
+                {/* --- ALL FORM FIELDS ARE NOW PRESENT --- */}
                 <div className="form-group">
                   <label htmlFor="title">Job Title</label>
                   <input id="title" name="title" value={title} onChange={this.handleInputChange} required />
@@ -214,6 +217,17 @@ class AdminDashboard extends Component {
                   <label htmlFor="jobDescription">Job Description</label>
                   <textarea id="jobDescription" name="jobDescription" value={jobDescription} onChange={this.handleInputChange} required />
                 </div>
+                <div className="form-group">
+                  <label htmlFor="skills">Skills (comma-separated)</label>
+                  <input
+                    id="skills"
+                    name="skills"
+                    value={skills}
+                    onChange={this.handleInputChange}
+                    placeholder="e.g., React, Node.js, CSS"
+                  />
+                </div>
+
                 <div className="form-buttons">
                   <button type="submit" className="submit-btn">{editingJobId ? 'Update Job' : 'Create Job'}</button>
                   {editingJobId && <button type="button" className="cancel-btn" onClick={this.resetForm}>Cancel Edit</button>}
@@ -226,8 +240,6 @@ class AdminDashboard extends Component {
             {/* Right Column: Jobs List */}
             <div className="jobs-list-container">
               <h2>Manage Existing Jobs</h2>
-              
-              {/* --- NEW: Search Bar --- */}
               <div className="admin-search-container">
                 <input
                   type="search"
@@ -237,12 +249,10 @@ class AdminDashboard extends Component {
                   onChange={this.handleSearchChange}
                 />
               </div>
-
               {apiStatus === 'IN_PROGRESS' && <div className="loader-container"><ThreeDots color="#4f46e5" height={80} width={80} /></div>}
               {apiStatus === 'FAILURE' && <p className="error-message">Failed to load jobs data.</p>}
-              {apiStatus === 'SUCCESS' && (
-                // --- UPDATED: Use the filteredJobs array ---
-                filteredJobs.length === 0 ? (
+              {apiStatus === 'SUCCESS' &&
+                (filteredJobs.length === 0 ? (
                   <p className="no-jobs-message">
                     {searchQuery ? 'No jobs match your search.' : 'No jobs found. Add one using the form.'}
                   </p>
@@ -261,8 +271,7 @@ class AdminDashboard extends Component {
                       </li>
                     ))}
                   </ul>
-                )
-              )}
+                ))}
             </div>
           </div>
         </div>

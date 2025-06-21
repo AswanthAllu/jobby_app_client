@@ -1,102 +1,103 @@
-import {Component} from 'react'
-import Cookies from 'js-cookie'
-import {AiFillStar} from 'react-icons/ai'
-import {GoLocation} from 'react-icons/go'
-import {BsBriefcaseFill} from 'react-icons/bs'
-import {BiLinkExternal} from 'react-icons/bi'
-import {ThreeDots} from 'react-loader-spinner' // UPDATED IMPORT
-
-import SkillsCard from '../SkillsCard'
-import Header from '../Header'
-import SimilarJobItem from '../SimilarJobItem'
-import './index.css'
+// src/components/JobItemDetails/index.js
+import {Component} from 'react';
+import {useParams} from 'react-router-dom'; // <-- Import the useParams hook
+import Cookies from 'js-cookie';
+import {AiFillStar} from 'react-icons/ai';
+import {GoLocation} from 'react-icons/go';
+import {BsBriefcaseFill} from 'react-icons/bs';
+import {BiLinkExternal} from 'react-icons/bi';
+import {ThreeDots} from 'react-loader-spinner';
+import Header from '../Header';
+import SimilarJobItem from '../SimilarJobItem';
+import './index.css';
 
 const apiStatusConstants = {
   initial: 'INITIAL',
   inProgress: 'INPROGRESS',
   success: 'SUCCESS',
   failure: 'FAILURE',
-}
+};
 
 class JobItemDetails extends Component {
   state = {
     jobItemList: {},
     similarJobItemList: [],
     apiStatus: apiStatusConstants.initial,
+  };
+
+  // --- UPDATED: componentDidUpdate now compares the ID from props ---
+  componentDidUpdate(prevProps) {
+    // Check if the router's id prop has changed
+    if (this.props.router.params.id !== prevProps.router.params.id) {
+      this.getJobItem();
+    }
   }
 
   componentDidMount() {
-    this.getJobItem()
+    this.getJobItem();
   }
 
   getJobItem = async () => {
-    this.setState({
-      apiStatus: apiStatusConstants.inProgress,
-    })
+    this.setState({apiStatus: 'IN_PROGRESS'});
+    
+    // --- UPDATED: Get the ID directly from props ---
+    const {id} = this.props.router.params;
 
-    // To get the ID from the URL with react-router-dom v6, we need a wrapper component.
-    // For a quick fix in a class component, we can parse the window location.
-    const urlPath = window.location.pathname
-    const id = urlPath.substring(urlPath.lastIndexOf('/') + 1)
-
-    const jwtToken = Cookies.get('jwt_token')
-    const url = `${process.env.REACT_APP_API_URL}/api/jobs/${id}`
+    const jwtToken = Cookies.get('jwt_token');
+    const url = `${process.env.REACT_APP_API_URL}/api/jobs/${id}`;
     const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
+      headers: {Authorization: `Bearer ${jwtToken}`},
       method: 'GET',
-    }
-    const response = await fetch(url, options)
-    if (response.ok === true) {
-      const data = await response.json()
-      // The frontend expects camelCase, but our backend sends snake_case. Let's format it.
-      const updatedData = {
-        companyLogoUrl: data.job_details.company_logo_url,
-        companyWebsiteUrl: data.job_details.company_website_url,
-        employmentType: data.job_details.employment_type,
-        id: data.job_details.id,
-        jobDescription: data.job_details.job_description,
-        lifeAtCompany: {
-          description: data.job_details.life_at_company.description,
-          imageUrl: data.job_details.life_at_company.image_url,
-        },
-        location: data.job_details.location,
-        rating: data.job_details.rating,
-        title: data.job_details.title,
-        packagePerAnnum: data.job_details.package_per_annum,
-        skills: data.job_details.skills.map(eachSkill => ({
-          imageUrl: eachSkill.image_url,
-          name: eachSkill.name,
-        })),
+    };
+
+    // ... (rest of the getJobItem function remains the same)
+    try {
+      const response = await fetch(url, options);
+      if (response.ok) {
+        const data = await response.json();
+        const updatedData = {
+          companyLogoUrl: data.job_details.company_logo_url,
+          companyWebsiteUrl: data.job_details.company_website_url,
+          employmentType: data.job_details.employment_type,
+          id: data.job_details.id,
+          jobDescription: data.job_details.job_description,
+          lifeAtCompany: data.job_details.life_at_company,
+          location: data.job_details.location,
+          rating: data.job_details.rating,
+          title: data.job_details.title,
+          packagePerAnnum: data.job_details.package_per_annum,
+          skills: data.job_details.skills.map(eachSkill => ({
+            name: eachSkill.name,
+          })),
+        };
+        const updatedSkillData = data.similar_jobs.map(eachSimilarJob => ({
+          companyLogoUrl: eachSimilarJob.company_logo_url,
+          employmentType: eachSimilarJob.employment_type,
+          jobDescription: eachSimilarJob.job_description,
+          id: eachSimilarJob.id,
+          rating: eachSimilarJob.rating,
+          location: eachSimilarJob.location,
+          title: eachSimilarJob.title,
+        }));
+
+        this.setState({
+          jobItemList: updatedData,
+          similarJobItemList: updatedSkillData,
+          apiStatus: apiStatusConstants.success,
+        });
+      } else {
+        this.setState({apiStatus: 'FAILURE'});
       }
-      const updatedSkillData = data.similar_jobs.map(eachSimilarJob => ({
-        companyLogoUrl: eachSimilarJob.company_logo_url,
-        employmentType: eachSimilarJob.employment_type,
-        jobDescription: eachSimilarJob.job_description,
-        id: eachSimilarJob.id,
-        rating: eachSimilarJob.rating,
-        location: eachSimilarJob.location,
-        title: eachSimilarJob.title,
-      }))
-
-      this.setState({
-        jobItemList: updatedData,
-        similarJobItemList: updatedSkillData,
-        apiStatus: apiStatusConstants.success,
-      })
-    } else {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+    } catch (error) {
+      this.setState({apiStatus: 'FAILURE'});
     }
-  }
+  };
 
+  // ... (renderJobItemDetails, renderFailureView, etc. remain the same)
   renderJobItemDetails = () => {
-    const {jobItemList, similarJobItemList} = this.state
-    // Check if jobItemList and its nested properties exist before destructuring
-    if (!jobItemList || !jobItemList.lifeAtCompany) {
-      return null // or a loading state
+    const {jobItemList, similarJobItemList} = this.state;
+    if (Object.keys(jobItemList).length === 0) {
+      return null;
     }
 
     const {
@@ -110,8 +111,10 @@ class JobItemDetails extends Component {
       packagePerAnnum,
       lifeAtCompany,
       skills,
-    } = jobItemList
-    const {description, imageUrl} = lifeAtCompany
+    } = jobItemList;
+
+    const description = lifeAtCompany ? lifeAtCompany.description : '';
+    const imageUrl = lifeAtCompany ? lifeAtCompany.imageUrl : '';
 
     return (
       <div className="full-job-item-container">
@@ -152,36 +155,42 @@ class JobItemDetails extends Component {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Visit
-              <BiLinkExternal className="bi-link" />
+              Visit <BiLinkExternal className="bi-link" />
             </a>
           </div>
           <p className="job-story-desc">{jobDescription}</p>
           <h1 className="skill-heading">Skills</h1>
-          <ul className="skill-container">
+          <ul className="skill-container-details">
             {skills.map(eachSkill => (
-              <SkillsCard key={eachSkill.name} skillDetails={eachSkill} />
+              <li key={eachSkill.name} className="skill-item-details">
+                {eachSkill.name}
+              </li>
             ))}
           </ul>
-          <h1 className="life-company-heading">Life at Company</h1>
-          <div className="life-at-company-container">
-            <p className="life-company-desc">{description}</p>
-            <img
-              src={imageUrl}
-              alt="life at company"
-              className="company-logo"
-            />
-          </div>
+          {description && (
+            <>
+              <h1 className="life-company-heading">Life at Company</h1>
+              <div className="life-at-company-container">
+                <p className="life-company-desc">{description}</p>
+                {imageUrl && <img src={imageUrl} alt="life at company" className="company-logo" />}
+              </div>
+            </>
+          )}
         </div>
-        <h1 className="similar-job-heading">Similar Jobs</h1>
-        <ul className="similar-cards">
-          {similarJobItemList.map(eachItem => (
-            <SimilarJobItem key={eachItem.id} jobDetails={eachItem} />
-          ))}
-        </ul>
+
+        {similarJobItemList.length > 0 && (
+          <>
+            <h1 className="similar-job-heading">Similar Jobs</h1>
+            <ul className="similar-cards">
+              {similarJobItemList.map(eachItem => (
+                <SimilarJobItem key={eachItem.id} jobDetails={eachItem} />
+              ))}
+            </ul>
+          </>
+        )}
       </div>
-    )
-  }
+    );
+  };
 
   renderFailureView = () => (
     <div className="render-loading-view">
@@ -190,9 +199,9 @@ class JobItemDetails extends Component {
         alt="failure view"
         className="failure-view"
       />
-      <h1 className="failure-heading">Oops! Something Went Wrong </h1>
+      <h1 className="failure-heading">Oops! Something Went Wrong</h1>
       <p className="failure-desc">
-        We cannot seem to find the page you are looking for
+        We cannot seem to find the page you are looking for.
       </p>
       <button
         type="button"
@@ -202,29 +211,27 @@ class JobItemDetails extends Component {
         Retry
       </button>
     </div>
-  )
+  );
 
   renderLoadingView = () => (
     <div className="profile-loader-container" data-testid="loader">
-      {/* UPDATED COMPONENT USAGE */}
       <ThreeDots color="#ffffff" height={50} width={50} />
     </div>
-  )
+  );
 
   renderJobViews = () => {
-    const {apiStatus} = this.state
-
+    const {apiStatus} = this.state;
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return this.renderJobItemDetails()
+        return this.renderJobItemDetails();
       case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
+        return this.renderLoadingView();
       case apiStatusConstants.failure:
-        return this.renderFailureView()
+        return this.renderFailureView();
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   render() {
     return (
@@ -234,8 +241,16 @@ class JobItemDetails extends Component {
           {this.renderJobViews()}
         </div>
       </>
-    )
+    );
   }
 }
 
-export default JobItemDetails
+// --- THIS IS THE NEW WRAPPER COMPONENT ---
+const JobItemDetailsWrapper = () => {
+  // useParams() is a hook that gives us the URL parameters, like ':id'
+  const params = useParams();
+  // We pass the params down to our class component in a 'router' prop
+  return <JobItemDetails router={{params}} />;
+};
+
+export default JobItemDetailsWrapper;

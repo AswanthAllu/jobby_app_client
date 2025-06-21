@@ -1,67 +1,113 @@
+/* src/components/LoginForm/index.css */
+
 .jobby-app-container {
   background-color: #000000;
-  height: 100vh;
+  min-height: 100vh; /* Use min-height for flexibility */
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px; /* Add some padding for small screens */
 }
+
 .card-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #272727;
-  padding: 65px;
+  padding: 30px 20px; /* Reduced padding for mobile */
   border-radius: 15px;
+  width: 100%; /* Take up full width of its parent */
+  max-width: 450px; /* But don't grow larger than 450px */
 }
+
 .website-logo {
-  width: 150px;
-  margin-bottom: 25px;
+  width: 120px; /* Slightly smaller logo for better balance */
+  margin-bottom: 20px;
 }
+
 .form-container {
   display: flex;
   flex-direction: column;
-  margin-top: 35px;
+  width: 100%;
+  margin-top: 20px;
 }
+
 .input-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
+  width: 100%;
 }
-.login-button {
-  background-color: #4f46e5;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-family: 'Roboto';
-  font-weight: 500;
-  border: none;
-  color: #fff;
-  margin-top: 10px;
-}
+
 .label {
-  color: #fff;
-  font-size: 14px;
-  font-family: 'Roboto';
-  font-weight: 400;
+  color: #f8fafc; /* A slightly softer white */
+  font-size: 12px;
+  font-weight: 600; /* Bolder label */
   margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
+
 .user-input {
   background: transparent;
-  border: 1px solid #6366f1;
-  width: 350px;
-  border-radius: 5px;
-  padding: 12px;
+  border: 1px solid #7e858e; /* A more neutral border color */
+  width: 100%; /* Make input take full width of its container */
+  border-radius: 6px;
+  padding: 12px 16px;
   outline: none;
   font-size: 16px;
-  color: #fff;
+  color: #ffffff;
+  transition: border-color 0.2s;
 }
+
+.user-input:focus {
+  border-color: #6366f1; /* Highlight border on focus */
+}
+
+.login-button {
+  background-color: #4f46e5;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  color: #ffffff;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #4338ca;
+}
+
 .error-msg {
   align-self: start;
-  font-size: 16px;
-  margin-top: 3px;
+  font-size: 14px;
+  margin-top: 5px;
   margin-bottom: 0px;
-  font-family: 'Roboto';
-  font-size: 12px;
-  line-height: 16px;
   color: #ff0b37;
+}
+
+.signup-link {
+  color: #cbd5e1;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.signup-link a {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* --- DESKTOP AND LARGER SCREENS --- */
+@media screen and (min-width: 768px) {
+  .card-container {
+    padding: 60px 50px; /* Restore larger padding on desktop */
+  }
+
+  .website-logo {
+    width: 150px;
+  }
 }

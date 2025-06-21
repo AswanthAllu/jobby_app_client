@@ -9,7 +9,6 @@ class AdminDashboard extends Component {
   state = {
     jobs: [],
     apiStatus: 'INITIAL',
-    // Form state
     title: '',
     companyLogoUrl: '',
     companyWebsiteUrl: '',
@@ -17,12 +16,14 @@ class AdminDashboard extends Component {
     employmentType: 'Full Time',
     packagePerAnnum: '',
     jobDescription: '',
-    // Editing state
     editingJobId: null,
     successMessage: '',
     errorMessage: '',
+    // --- NEW: State for the search feature ---
+    searchQuery: '',
   };
 
+  // --- All existing logic functions (componentDidMount, fetchJobs, etc.) remain the same ---
   componentDidMount() {
     this.fetchJobs();
   }
@@ -38,10 +39,7 @@ class AdminDashboard extends Component {
     const response = await fetch(url, options);
     if (response.ok) {
       const data = await response.json();
-      const formattedJobs = data.jobs.map(job => ({
-        ...job,
-        id: job.id,
-      }));
+      const formattedJobs = data.jobs.map(job => ({...job, id: job.id}));
       this.setState({jobs: formattedJobs, apiStatus: 'SUCCESS'});
     } else {
       this.setState({apiStatus: 'FAILURE'});
@@ -50,6 +48,11 @@ class AdminDashboard extends Component {
 
   handleInputChange = event => {
     this.setState({[event.target.name]: event.target.value});
+  };
+
+  // --- NEW: Handler for the search input ---
+  handleSearchChange = event => {
+    this.setState({searchQuery: event.target.value});
   };
 
   handleFormSubmit = async event => {
@@ -66,7 +69,6 @@ class AdminDashboard extends Component {
       jobDescription,
     } = this.state;
     const token = Cookies.get('jwt_token');
-
     const jobData = {
       title,
       companyLogoUrl,
@@ -76,12 +78,10 @@ class AdminDashboard extends Component {
       packagePerAnnum,
       jobDescription,
     };
-
     const isUpdating = editingJobId !== null;
     const url = isUpdating
-      ? `http://localhost:5001/api/jobs/${editingJobId}`
-      : `http://localhost:5001/api/jobs`;
-
+      ? `${process.env.REACT_APP_API_URL}/api/jobs/${editingJobId}`
+      : `${process.env.REACT_APP_API_URL}/api/jobs`;
     const options = {
       method: isUpdating ? 'PUT' : 'POST',
       headers: {
@@ -90,10 +90,11 @@ class AdminDashboard extends Component {
       },
       body: JSON.stringify(jobData),
     };
-
     const response = await fetch(url, options);
     if (response.ok) {
-      this.setState({successMessage: `Job ${isUpdating ? 'updated' : 'created'} successfully!`});
+      this.setState({
+        successMessage: `Job ${isUpdating ? 'updated' : 'created'} successfully!`,
+      });
       this.resetForm();
       this.fetchJobs();
     } else {
@@ -118,12 +119,10 @@ class AdminDashboard extends Component {
   handleDeleteClick = async jobId => {
     if (window.confirm('Are you sure you want to delete this job?')) {
       const token = Cookies.get('jwt_token');
-      const url = `http://localhost:5001/api/jobs/${jobId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/jobs/${jobId}`;
       const options = {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {Authorization: `Bearer ${token}`},
       };
       const response = await fetch(url, options);
       if (response.ok) {
@@ -148,49 +147,6 @@ class AdminDashboard extends Component {
     });
   };
 
-  // --- THIS FUNCTION IS NOW BACK IN THE COMPONENT ---
-  renderJobsList = () => {
-    const {jobs} = this.state;
-    return (
-      // Using the original class names for the list part
-      <div className="jobs-list-container">
-        <h2>Manage Existing Jobs</h2>
-        {jobs.length === 0 ? (
-          <p>No jobs found. Add one using the form above.</p>
-        ) : (
-          <ul className="jobs-list">
-            {jobs.map(job => (
-              <li key={job.id} className="job-item-admin">
-                <div className="job-info">
-                  <h3>{job.title}</h3>
-                  <p>{job.location} - {job.employment_type}</p>
-                </div>
-                <div className="job-actions">
-                  <button className="edit-btn" onClick={() => this.handleEditClick(job)}>Edit</button>
-                  <button className="delete-btn" onClick={() => this.handleDeleteClick(job.id)}>Delete</button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
-  };
-
-  // --- THIS FUNCTION IS ALSO BACK ---
-  renderContent = () => {
-    const {apiStatus} = this.state;
-    switch (apiStatus) {
-      case 'IN_PROGRESS':
-        return <div className="loader-container"><ThreeDots color="#4f46e5" height={80} width={80} /></div>;
-      case 'FAILURE':
-        return <p className="error-message">Failed to load jobs data. Please try again.</p>;
-      case 'SUCCESS':
-        return this.renderJobsList();
-      default:
-        return null;
-    }
-  };
 
   render() {
     const {
@@ -204,38 +160,111 @@ class AdminDashboard extends Component {
       jobDescription,
       successMessage,
       errorMessage,
+      apiStatus,
+      jobs,
+      // --- NEW: Get search query from state ---
+      searchQuery,
     } = this.state;
+
+    // --- NEW: Filter the jobs list based on the search query ---
+    const filteredJobs = jobs.filter(job =>
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
 
     return (
       <>
         <Header />
-        {/* Using the original class name for the main container */}
-        <div className="admin-dashboard">
-          <h1>Admin Dashboard</h1>
-          {/* Using the form-specific class names */}
-          <form className="admin-form" onSubmit={this.handleFormSubmit}>
-            <h2>{editingJobId ? 'Edit Job' : 'Add New Job'}</h2>
-            <input name="title" value={title} onChange={this.handleInputChange} placeholder="Job Title" required />
-            <input name="companyLogoUrl" value={companyLogoUrl} onChange={this.handleInputChange} placeholder="Company Logo URL" />
-            <input name="companyWebsiteUrl" value={companyWebsiteUrl} onChange={this.handleInputChange} placeholder="Company Website URL" />
-            <input name="location" value={location} onChange={this.handleInputChange} placeholder="Location" required />
-            <select name="employmentType" value={employmentType} onChange={this.handleInputChange}>
-              <option value="Full Time">Full Time</option>
-              <option value="Part Time">Part Time</option>
-              <option value="Internship">Internship</option>
-              <option value="Freelance">Freelance</option>
-            </select>
-            <input name="packagePerAnnum" value={packagePerAnnum} onChange={this.handleInputChange} placeholder="Package Per Annum (e.g., 15 LPA)" />
-            <textarea name="jobDescription" value={jobDescription} onChange={this.handleInputChange} placeholder="Job Description" required />
-            <button type="submit" className="submit-job-button">
-              {editingJobId ? 'Update Job' : 'Create Job'}
-            </button>
-            {successMessage && <p className="success-message">{successMessage}</p>}
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-          </form>
+        <div className="admin-page-container">
+          <h1 className="admin-page-title">Admin Dashboard</h1>
+          <div className="admin-layout">
+            {/* Left Column: Form */}
+            <div className="admin-form-container">
+              <form className="admin-form" onSubmit={this.handleFormSubmit}>
+                <h2>{editingJobId ? 'Edit Job' : 'Add New Job'}</h2>
+                <div className="form-group">
+                  <label htmlFor="title">Job Title</label>
+                  <input id="title" name="title" value={title} onChange={this.handleInputChange} required />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="companyLogoUrl">Company Logo URL</label>
+                  <input id="companyLogoUrl" name="companyLogoUrl" value={companyLogoUrl} onChange={this.handleInputChange} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="companyWebsiteUrl">Company Website URL</label>
+                  <input id="companyWebsiteUrl" name="companyWebsiteUrl" value={companyWebsiteUrl} onChange={this.handleInputChange} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="location">Location</label>
+                  <input id="location" name="location" value={location} onChange={this.handleInputChange} required />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="employmentType">Employment Type</label>
+                  <select id="employmentType" name="employmentType" value={employmentType} onChange={this.handleInputChange}>
+                    <option value="Full Time">Full Time</option>
+                    <option value="Part Time">Part Time</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Freelance">Freelance</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="packagePerAnnum">Package Per Annum</label>
+                  <input id="packagePerAnnum" name="packagePerAnnum" value={packagePerAnnum} onChange={this.handleInputChange} />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="jobDescription">Job Description</label>
+                  <textarea id="jobDescription" name="jobDescription" value={jobDescription} onChange={this.handleInputChange} required />
+                </div>
+                <div className="form-buttons">
+                  <button type="submit" className="submit-btn">{editingJobId ? 'Update Job' : 'Create Job'}</button>
+                  {editingJobId && <button type="button" className="cancel-btn" onClick={this.resetForm}>Cancel Edit</button>}
+                </div>
+                {successMessage && <p className="success-message">{successMessage}</p>}
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
+              </form>
+            </div>
 
-          {/* --- THIS LINE ADDS THE JOBS LIST BACK TO THE PAGE --- */}
-          {this.renderContent()}
+            {/* Right Column: Jobs List */}
+            <div className="jobs-list-container">
+              <h2>Manage Existing Jobs</h2>
+              
+              {/* --- NEW: Search Bar --- */}
+              <div className="admin-search-container">
+                <input
+                  type="search"
+                  className="admin-search-input"
+                  placeholder="Search by job title..."
+                  value={searchQuery}
+                  onChange={this.handleSearchChange}
+                />
+              </div>
+
+              {apiStatus === 'IN_PROGRESS' && <div className="loader-container"><ThreeDots color="#4f46e5" height={80} width={80} /></div>}
+              {apiStatus === 'FAILURE' && <p className="error-message">Failed to load jobs data.</p>}
+              {apiStatus === 'SUCCESS' && (
+                // --- UPDATED: Use the filteredJobs array ---
+                filteredJobs.length === 0 ? (
+                  <p className="no-jobs-message">
+                    {searchQuery ? 'No jobs match your search.' : 'No jobs found. Add one using the form.'}
+                  </p>
+                ) : (
+                  <ul className="jobs-list">
+                    {filteredJobs.map(job => (
+                      <li key={job.id} className="job-item-admin">
+                        <div className="job-info">
+                          <h3>{job.title}</h3>
+                          <p>{job.location} - {job.employment_type}</p>
+                        </div>
+                        <div className="job-actions">
+                          <button className="edit-btn" onClick={() => this.handleEditClick(job)}>Edit</button>
+                          <button className="delete-btn" onClick={() => this.handleDeleteClick(job.id)}>Delete</button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )
+              )}
+            </div>
+          </div>
         </div>
       </>
     );

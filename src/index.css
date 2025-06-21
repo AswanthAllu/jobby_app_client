@@ -1,0 +1,29 @@
+/* src/index.css */
+
+/* --- THIS IS THE FIX --- */
+/* A simple and effective CSS Reset */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* The font-family should be here, not in a '*' selector */
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Set a default background color for the whole app */
+  background-color: #000000;
+}
+
+/* The box-sizing rule is best applied universally */
+* {
+  box-sizing: border-box;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
